@@ -21,7 +21,9 @@ jobs:
         id: find-docker-changes
         run: |
           # DEBUG
+          echo "1"
           echo $(git diff-tree --no-commit-id --name-only -r HEAD)
+          echo "2"
           # Obter os diretórios que contêm Dockerfile
           find . -type f -name Dockerfile | grep -o '.*/' | uniq | sort | sed 's/\.\///' | rev | sed 's/\///' | rev > docker_dirs.txt
           # Obter os diretórios alterados pelo Git (após a 6ª linha)
