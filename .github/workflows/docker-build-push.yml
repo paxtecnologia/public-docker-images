@@ -31,8 +31,8 @@ jobs:
           echo $common_dirs
           echo "dir=${common_dirs}" >> $GITHUB_OUTPUT
 
-  create_build_matrix:
-    needs: create_docker_changes
+  create-build-matrix:
+    needs: create-docker-changes
     runs-on: ubuntu-latest
     if: ${{ !contains(needs.create-docker-changes.outputs.directory, '[]') }}
     strategy:
