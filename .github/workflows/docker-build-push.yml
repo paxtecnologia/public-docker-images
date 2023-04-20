@@ -1,0 +1,47 @@
+name: Docker Build and Push
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        directory: ${{ steps.find-dockerfiles.outputs.dirs }}
+      max-parallel: 4
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Find Dockerfiles
+        id: find-dockerfiles
+        run: |
+          # Obter os diretórios que contêm Dockerfile
+          docker_dirs=$(find . -type f -name Dockerfile | grep -o '.*/' | uniq | sort | sed 's/\.\///' | rev | sed 's/\///' | rev )
+          # Obter os diretórios alterados pelo Git (após a 6ª linha)
+          git_dirs=$(git show --name-only | awk 'NR>6 {print $0}' | grep -o '.*/' | uniq | sort | rev | sed 's/\///' | rev)
+          # Extrair os diretórios que aparecem em ambos os arrays
+          common_dirs=$(comm -12 <(echo "$docker_dirs") <(echo "$git_dirs"))
+          echo "::set-output name=dirs::${common_dirs}"    
+      - name: Install jq
+        run: sudo apt-get update && sudo apt-get install -y jq     
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKER_REGISTRY_USERNAME }}
+          password: ${{ secrets.DOCKER_REGISTRY_PASSWORD }}
+
+      - name: Build and push Docker images
+        env:
+          DOCKERHUB_USERNAME: ${{ secrets.DOCKER_REGISTRY_USERNAME }}
+          DOCKERHUB_PASSWORD: ${{ secrets.DOCKER_REGISTRY_PASSWORD }}
+          DIR: ${{ matrix.directory }}
+        run: |
+          cd ${{ env.DIR }}
+          IMAGE_NAME=${{ secrets.DOCKER_REGISTRY_USERNAME }}/$(jq '.image.name' config.json)
+          docker build -t $IMAGE_NAME .
+          docker push $IMAGE_NAME
