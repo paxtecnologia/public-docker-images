@@ -31,13 +31,41 @@ jobs:
           echo $common_dirs
           echo "dir=${common_dirs}" >> $GITHUB_OUTPUT
 
-  build-and-push:
-    needs: create-docker-changes
+  create_build_matrix:
+    needs: create_docker_changes
     runs-on: ubuntu-latest
     if: ${{ !contains(needs.create-docker-changes.outputs.directory, '[]') }}
     strategy:
       matrix:
         directory: ${{ fromJSON(needs.create-docker-changes.outputs.directory) }}
+      max-parallel: 4
+    outputs:
+      build-args-matrix: ${{ steps.find-build-matrix.outputs.build-args-matrix }}
+    steps:
+      - name: Install jq
+        run: sudo apt-get update && sudo apt-get install -y jq
+
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Find Build Matrix
+        id: find-build-matrix
+        env:
+          DIR: ${{ matrix.directory }}
+        run: |
+          cd ${{ env.DIR }}
+          build_args_matrix_jq = $(jq '.build.args.matrix' config.json)
+          build_args_matrix=$(printf "${build_args_matrix[@]}" | jq -R . | jq -s . | tr '\n' ' ' | tr -d ' ')
+          echo $build_args_matrix
+          echo "build-args-matrix=${build_args_matrix}" >> $GITHUB_OUTPUT
+
+  build-and-push:
+    needs: create-build-matrix
+    runs-on: ubuntu-latest
+    if: ${{ !contains(needs.create-build-matrix.outputs.build-args-matrix, '[]') }}
+    strategy:
+      matrix:
+        build-args-matrix: ${{ fromJSON(needs.create-build-matrix.outputs.build-args-matrix) }}
       max-parallel: 4
     steps:
       - name: Install jq
@@ -57,8 +85,11 @@ jobs:
           DOCKERHUB_USERNAME: ${{ secrets.DOCKER_REGISTRY_USERNAME }}
           DOCKERHUB_PASSWORD: ${{ secrets.DOCKER_REGISTRY_PASSWORD }}
           DIR: ${{ matrix.directory }}
+          BUILD_ARGS_MATRIX: ${{ matrix.build-args-matrix }}
         run: |
-          cd ${{ env.DIR }}
-          IMAGE_NAME=${{ secrets.DOCKER_REGISTRY_USERNAME }}/$(jq '.image.name' config.json)
-          docker build -t $IMAGE_NAME .
-          docker push $IMAGE_NAME
+          echo ${{ env.DIR }}
+          echo ${{ env.BUILD_ARGS_MATRIX }}
+          # cd ${{ env.DIR }}
+          # IMAGE_NAME=${{ secrets.DOCKER_REGISTRY_USERNAME }}/$(jq '.image.name' config.json)
+          # docker build -t $IMAGE_NAME .
+          # docker push $IMAGE_NAME

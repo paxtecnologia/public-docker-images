@@ -1,0 +1,17 @@
+{
+  "repository": {
+    "name": "python-poetry"
+  },
+  "build": {
+    "args": {
+      "global": {
+        "poetry": "https://install.python-poetry.org"
+      },
+      "matrix": [
+        {
+          "python": "3.11-slim-buster"
+        }
+      ]
+    }
+  }
+}
