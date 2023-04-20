@@ -11,20 +11,24 @@ jobs:
     outputs:
       directory: ${{ steps.find-docker-changes.outputs.dir }}
     steps:
+      - name: Install jq
+        run: sudo apt-get update && sudo apt-get install -y jq
+
       - name: Checkout code
         uses: actions/checkout@v2
+
       - name: Find Docker Changes
         id: find-docker-changes
         run: |
           # Obter os diretórios que contêm Dockerfile
-          docker_dirs=$(find . -type f -name Dockerfile | grep -o '.*/' | uniq | sort | sed 's/\.\///' | rev | sed 's/\///' | rev )
+          find . -type f -name Dockerfile | grep -o '.*/' | uniq | sort | sed 's/\.\///' | rev | sed 's/\///' | rev > docker_dirs.txt
           # Obter os diretórios alterados pelo Git (após a 6ª linha)
-          git_dirs=$(git show --name-only | awk 'NR>6 {print $0}' | grep -o '.*/' | uniq | sort | rev | sed 's/\///' | rev)
+          git show --name-only | awk 'NR>6 {print $0}' | grep -o '.*/' | uniq | sort | rev | sed 's/\///' | rev > gitshow.txt
           # Extrair os diretórios que aparecem em ambos os arrays
-          IFS=$'\n' read -d '' -ra common_dirs <<< "$(comm -12 <(echo "$docker_dirs") <(echo "$git_dirs"))"
+          dir_dif=$(comm -12 docker_dirs.txt gitshow.txt)
+          common_dirs=$(printf "${dir_dif[@]}" | jq -R . | jq -s .)
           echo $common_dirs
           echo "dir=${common_dirs}" >> $GITHUB_OUTPUT
-          
 
   build-and-push:
     needs: create-docker-changes
@@ -34,11 +38,11 @@ jobs:
         directory: ${{ needs.create-docker-changes.outputs.directory }}
       max-parallel: 4
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
-
       - name: Install jq
         run: sudo apt-get update && sudo apt-get install -y jq
+
+      - name: Checkout code
+        uses: actions/checkout@v2
 
       - name: Login to Docker Hub
         uses: docker/login-action@v1
