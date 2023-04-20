@@ -22,12 +22,12 @@ jobs:
         run: |
           # DEBUG
           echo "1"
-          echo $(git diff-tree --no-commit-id --name-only -r HEAD)
+          echo $(git diff --name-only HEAD~1..HEAD)
           echo "2"
           # Obter os diretórios que contêm Dockerfile
           find . -type f -name Dockerfile | grep -o '.*/' | uniq | sort | sed 's/\.\///' | rev | sed 's/\///' | rev > docker_dirs.txt
           # Obter os diretórios alterados pelo Git (após a 6ª linha)
-          git diff-tree --no-commit-id --name-only -r HEAD | grep -o '.*/' | uniq | sort | rev | sed 's/\///' | rev > gitshow.txt
+          git diff --name-only HEAD~1..HEAD | grep -o '.*/' | uniq | sort | rev | sed 's/\///' | rev > gitshow.txt
           # DEBUG
           cat gitshow.txt
           cat docker_dirs.txt
