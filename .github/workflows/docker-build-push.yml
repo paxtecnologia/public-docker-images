@@ -62,8 +62,7 @@ jobs:
           DIR: ${{ matrix.directory }}
         run: |
           cd ${{ env.DIR }}
-          build_args_matrix_jq=$(jq '.build.args.matrix' config.json)
-          build_args_matrix=$(printf "${build_args_matrix_jq[@]}" | jq -R . | jq -s . | tr '\n' ' ' | tr -d ' ')
+          build_args_matrix=$(jq '.build.args.matrix' config.json | tr '\n' ' ' | tr -d ' ')
           echo $build_args_matrix
           echo "build-args-matrix=${build_args_matrix}" >> $GITHUB_OUTPUT
 
