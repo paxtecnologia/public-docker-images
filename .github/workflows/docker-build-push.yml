@@ -28,7 +28,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        directory: ${{ needs.create-docker-changes.outputs.matrix }}
+        directory: ${{ needs.create-docker-changes.outputs.directory }}
       max-parallel: 4
     steps:
       - name: Checkout code
