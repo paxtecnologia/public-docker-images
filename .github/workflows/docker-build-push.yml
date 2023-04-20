@@ -26,7 +26,7 @@ jobs:
           git show --name-only | awk 'NR>6 {print $0}' | grep -o '.*/' | uniq | sort | rev | sed 's/\///' | rev > gitshow.txt
           # Extrair os diretórios que aparecem em ambos os arrays
           dir_dif=$(comm -12 docker_dirs.txt gitshow.txt)
-          common_dirs=$(printf "${dir_dif[@]}" | jq -R . | jq -s . | tr '\n' ' ')
+          common_dirs=$(printf "${dir_dif[@]}" | jq -R . | jq -s . | tr '\n' ' ' | tr -d ' ')
           echo $common_dirs
           echo "dir=${common_dirs}" >> $GITHUB_OUTPUT
 
