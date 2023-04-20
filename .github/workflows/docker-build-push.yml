@@ -42,6 +42,6 @@ jobs:
           DIR: ${{ matrix.directory }}
         run: |
           cd ${{ env.DIR }}
-          IMAGE_NAME=${{ secrets.DOCKER_REGISTRY_USERNAME }}/$(jq '.image.name' config.json)
+          IMAGE_NAME=${{ secrets.DOCKER_REGISTRY_USERNAME }}/$(jq -r '.image.name' config.json)
           docker build -t $IMAGE_NAME .
           docker push $IMAGE_NAME
