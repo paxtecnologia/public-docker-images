@@ -49,6 +49,7 @@ jobs:
       max-parallel: 4
     outputs:
       build-args-matrix: ${{ steps.find-build-matrix.outputs.build-args-matrix }}
+      directory: ${{ matrix.directory }}
     steps:
       - name: Install jq
         run: sudo apt-get update && sudo apt-get install -y jq
@@ -67,9 +68,7 @@ jobs:
           echo "build-args-matrix=${build_args_matrix}" >> $GITHUB_OUTPUT
 
   build-and-push:
-    needs:
-      - create-build-matrix
-      - create-docker-changes
+    needs: create-build-matrix
     runs-on: ubuntu-latest
     if: ${{ !contains(needs.create-build-matrix.outputs.build-args-matrix, '[]') }}
     strategy:
@@ -93,7 +92,7 @@ jobs:
         env:
           DOCKERHUB_USERNAME: ${{ secrets.DOCKER_REGISTRY_USERNAME }}
           DOCKERHUB_PASSWORD: ${{ secrets.DOCKER_REGISTRY_PASSWORD }}
-          DIR: ${{ needs.create-docker-changes.outputs.directory }}
+          DIR: ${{ needs.create-build-matrix.outputs.directory }}
           BUILD_ARGS_MATRIX: ${{ toJSON(matrix.build-args-matrix) }}
         run: |
           echo ${{ env.DIR }}
