@@ -22,7 +22,8 @@ jobs:
           git_dirs=$(git show --name-only | awk 'NR>6 {print $0}' | grep -o '.*/' | uniq | sort | rev | sed 's/\///' | rev)
           # Extrair os diretórios que aparecem em ambos os arrays
           common_dirs=$(comm -12 <(echo "$docker_dirs") <(echo "$git_dirs"))
-          echo "::set-output name=dir::${common_dirs}"
+          echo $common_dirs
+          echo "dir=${common_dirs}" >> $GITHUB_OUTPUT
 
   build-and-push:
     runs-on: ubuntu-latest
