@@ -1,5 +1,6 @@
 {
   "image": {
-    "name": "aws-cli"
+    "name": "aws-cli",
+    "teste": "teste"
   }
 }

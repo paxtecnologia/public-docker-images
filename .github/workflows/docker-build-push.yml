@@ -21,9 +21,10 @@ jobs:
           # Obter os diretórios alterados pelo Git (após a 6ª linha)
           git_dirs=$(git show --name-only | awk 'NR>6 {print $0}' | grep -o '.*/' | uniq | sort | rev | sed 's/\///' | rev)
           # Extrair os diretórios que aparecem em ambos os arrays
-          common_dirs=$(comm -12 <(echo "$docker_dirs") <(echo "$git_dirs"))
+          IFS=$'\n' read -d '' -ra common_dirs <<< "$(comm -12 <(echo "$docker_dirs") <(echo "$git_dirs"))"
           echo $common_dirs
           echo "dir=${common_dirs}" >> $GITHUB_OUTPUT
+          
 
   build-and-push:
     needs: create-docker-changes
