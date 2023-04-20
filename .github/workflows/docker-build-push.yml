@@ -97,7 +97,19 @@ jobs:
         run: |
           echo ${{ env.DIR }}
           echo ${{ env.BUILD_ARGS_MATRIX }}
-          # cd ${{ env.DIR }}
-          # IMAGE_NAME=${{ secrets.DOCKER_REGISTRY_USERNAME }}/$(jq '.image.name' config.json)
-          # docker build -t $IMAGE_NAME .
-          # docker push $IMAGE_NAME
+          cd ${{ env.DIR }}
+          REPOSITORY_NAME=$(jq '.repository.name' config.json)
+          TAG=$(echo $BUILD_ARGS_MATRIX | jq '.TAG')
+          BUILD_ARG=""
+          GLOBAL_JSON=$(jq '.build.args.global' config.json)
+          for key in $(echo "${GLOBAL_JSON}" | jq -r keys[]); do
+            value=$(echo "${GLOBAL_JSON}" | jq -r ".${key}")
+            BUILD_ARG="${BUILD_ARG} --build-arg ${key}=${value}"
+          done
+          for key in $(echo "${env.BUILD_ARGS_MATRIX}" | jq -r keys[]); do
+            value=$(echo "${env.BUILD_ARGS_MATRIX}" | jq -r ".${key}")
+            BUILD_ARG="${BUILD_ARG} --build-arg ${key}=${value}"
+          done
+          IMAGE_NAME=${{ secrets.DOCKER_REGISTRY_USERNAME }}/$REPOSITORY_NAME:$TAG
+          docker build $BUILD_ARG -t $IMAGE_NAME .
+          docker push $IMAGE_NAME

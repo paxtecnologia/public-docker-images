@@ -5,20 +5,22 @@
   "build": {
     "args": {
       "global": {
-        "poetry": "https://install.python-poetry.org"
+        "POETRY": "https://install.python-poetry.org",
+        "POETRY_VERSION": "1.4.2"
       },
       "matrix": [
         {
-          "python": "3.11-slim-buster",
-          "banana": "batata"
+          "PYTHON": "3.11-slim-buster",
+          "BANANA": "batata",
+          "TAG": "3.11-1.4.2"
         },
         {
-          "python": "3.10-slim-buster",
-          "banana": "maça"
+          "PYTHON": "3.10-slim-buster",
+          "BANANA": "maça",
+          "TAG": "3.10-1.4.2"
         }
-
       ]
     }
   },
-  "update": "2023-04-18T19:02:00Z"
+  "update": "2023-04-18T19:22:00Z"
 }
