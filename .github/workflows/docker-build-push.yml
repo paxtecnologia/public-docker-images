@@ -67,7 +67,9 @@ jobs:
           echo "build-args-matrix=${build_args_matrix}" >> $GITHUB_OUTPUT
 
   build-and-push:
-    needs: create-build-matrix
+    needs:
+      - create-build-matrix
+      - create-docker-changes
     runs-on: ubuntu-latest
     if: ${{ !contains(needs.create-build-matrix.outputs.build-args-matrix, '[]') }}
     strategy:
@@ -91,7 +93,7 @@ jobs:
         env:
           DOCKERHUB_USERNAME: ${{ secrets.DOCKER_REGISTRY_USERNAME }}
           DOCKERHUB_PASSWORD: ${{ secrets.DOCKER_REGISTRY_PASSWORD }}
-          DIR: ${{ matrix.directory }}
+          DIR: ${{ needs.create-docker-changes.outputs.directory }}
           BUILD_ARGS_MATRIX: ${{ toJSON(matrix.build-args-matrix) }}
         run: |
           echo ${{ env.DIR }}
