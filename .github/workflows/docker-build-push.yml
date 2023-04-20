@@ -28,7 +28,7 @@ jobs:
           git diff --name-only HEAD~1..HEAD | grep -o '.*/' | uniq | sort | rev | sed 's/\///' | rev > gitshow.txt
           # Extrair os diretórios que aparecem em ambos os arrays
           dir_dif=$(comm -12 docker_dirs.txt gitshow.txt)
-          common_dirs=$(printf "${dir_dif[@]}" | jq -R . | jq -s . | tr '\n' ' ' | tr -d ' ')
+          common_dirs=$(printf "${dir_dif[@]}" | jq -R . | jq -s . | jq '{include: .}' | jq tostring)
           echo "dir=${common_dirs}" >> $GITHUB_OUTPUT
 
   create-build-matrix:
@@ -55,7 +55,7 @@ jobs:
           DIR: ${{ matrix.directory }}
         run: |
           cd ${{ env.DIR }}
-          build_args_matrix=$(jq '.build.args.matrix' config.json | tr '\n' ' ' | tr -d ' ')
+          build_args_matrix=$(jq '.build.args.matrix' config.json | jq '{include: .}' | jq tostring)
           echo "build-args-matrix=${build_args_matrix}" >> $GITHUB_OUTPUT
 
   build-and-push:
@@ -82,9 +82,7 @@ jobs:
       - name: Build and push Docker images
         env:
           DOCKERHUB_USERNAME: ${{ secrets.DOCKER_REGISTRY_USERNAME }}
-          DOCKERHUB_PASSWORD: ${{ secrets.DOCKER_REGISTRY_PASSWORD }}
           DIR: ${{ needs.create-build-matrix.outputs.directory }}
-          BUILD_ARGS_MATRIX: ${{ toJSON(matrix.build-args-matrix) }}
         run: |
           echo "1"
           cd ${{ env.DIR }}
@@ -107,9 +105,9 @@ jobs:
           echo "10"
           echo $BUILD_ARG
           echo "10.1"
-          for key in $(echo "${{ env.BUILD_ARGS_MATRIX }}" | jq -r keys[]); do
+          for key in $(echo "${{ matrix.build-args-matrix }}" | jq -r keys[]); do
             echo "11"
-            value=$(echo "${{ env.BUILD_ARGS_MATRIX }}" | jq -r ".${key}")
+            value=$(echo "${{ matrix.build-args-matrix }}" | jq -r ".${key}")
             echo "2"
             BUILD_ARG="${BUILD_ARG} --build-arg ${key}=${value}"
             echo "13"
@@ -117,7 +115,7 @@ jobs:
           echo "14"
           echo $BUILD_ARG
           echo "14.1"
-          IMAGE_NAME=${{ secrets.DOCKER_REGISTRY_USERNAME }}/$REPOSITORY_NAME:$TAG
+          IMAGE_NAME=${{ env.DOCKER_REGISTRY_USERNAME }}/$REPOSITORY_NAME:$TAG
           echo $IMAGE_NAME
           echo "15"
           docker build $BUILD_ARG -t $IMAGE_NAME .
