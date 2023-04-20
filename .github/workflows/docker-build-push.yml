@@ -105,15 +105,20 @@ jobs:
             echo "9"
           done
           echo "10"
-          for key in $(echo "${env.BUILD_ARGS_MATRIX}" | jq -r keys[]); do
+          echo $BUILD_ARG
+          echo "10.1"
+          for key in $(echo "${{ env.BUILD_ARGS_MATRIX }}" | jq -r keys[]); do
             echo "11"
-            value=$(echo "${env.BUILD_ARGS_MATRIX}" | jq -r ".${key}")
+            value=$(echo "${{ env.BUILD_ARGS_MATRIX }}" | jq -r ".${key}")
             echo "2"
             BUILD_ARG="${BUILD_ARG} --build-arg ${key}=${value}"
             echo "13"
           done
           echo "14"
+          echo $BUILD_ARG
+          echo "14.1"
           IMAGE_NAME=${{ secrets.DOCKER_REGISTRY_USERNAME }}/$REPOSITORY_NAME:$TAG
+          echo $IMAGE_NAME
           echo "15"
           docker build $BUILD_ARG -t $IMAGE_NAME .
           echo "16"
