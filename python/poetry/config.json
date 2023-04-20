@@ -9,10 +9,16 @@
       },
       "matrix": [
         {
-          "python": "3.11-slim-buster"
+          "python": "3.11-slim-buster",
+          "banana": "batata"
+        },
+        {
+          "python": "3.10-slim-buster",
+          "banana": "maça"
         }
+
       ]
     }
   },
-  "update": "2023-04-18T18:45:00Z"
+  "update": "2023-04-18T18:51:00Z"
 }
