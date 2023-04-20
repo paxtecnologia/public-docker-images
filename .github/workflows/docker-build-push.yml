@@ -26,6 +26,7 @@ jobs:
           echo "dir=${common_dirs}" >> $GITHUB_OUTPUT
 
   build-and-push:
+    needs: create-docker-changes
     runs-on: ubuntu-latest
     strategy:
       matrix:
