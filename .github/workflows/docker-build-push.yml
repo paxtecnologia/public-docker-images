@@ -24,7 +24,7 @@ jobs:
           # Obter os diretórios que contêm Dockerfile
           find . -type f -name Dockerfile | grep -o '.*/' | uniq | sort | sed 's/\.\///' | rev | sed 's/\///' | rev > docker_dirs.txt
           # Obter os diretórios alterados pelo Git (após a 6ª linha)
-          git show --name-only | awk 'NR>6 {print $0}' | grep -o '.*/' | uniq | sort | rev | sed 's/\///' | rev > gitshow.txt
+          git diff-tree --no-commit-id --name-only -r HEAD | grep -o '.*/' | uniq | sort | rev | sed 's/\///' | rev > gitshow.txt
           # Extrair os diretórios que aparecem em ambos os arrays
           dir_dif=$(comm -12 docker_dirs.txt gitshow.txt)
           common_dirs=$(printf "${dir_dif[@]}" | jq -R . | jq -s . | tr '\n' ' ' | tr -d ' ')
