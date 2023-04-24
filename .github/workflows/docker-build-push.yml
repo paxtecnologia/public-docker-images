@@ -116,7 +116,7 @@ jobs:
           echo "14"
           echo $BUILD_ARG
           echo "14.1"
-          IMAGE_NAME=$(echo "${{ env.DOCKER_REGISTRY_USERNAME }}/${REPOSITORY_NAME}:${TAG}"
+          IMAGE_NAME=$(echo "${{ env.DOCKER_REGISTRY_USERNAME }}/${REPOSITORY_NAME}:${TAG})"
           echo $IMAGE_NAME
           echo "15"
           # docker build $BUILD_ARG -t $IMAGE_NAME .
