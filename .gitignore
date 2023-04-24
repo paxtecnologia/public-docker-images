@@ -1,4 +1,6 @@
 .secret
+gitshow.txt
+docker_dirs.txt
 
 # Created by https://www.toptal.com/developers/gitignore/api/linux,windows,macos,visualstudiocode
 # Edit at https://www.toptal.com/developers/gitignore?templates=linux,windows,macos,visualstudiocode
