@@ -81,7 +81,7 @@ jobs:
 
       - name: Build and push Docker images
         env:
-          DOCKERHUB_USERNAME: ${{ secrets.DOCKER_REGISTRY_USERNAME }}
+          DOCKER_REGISTRY_USERNAME: ${{ secrets.DOCKER_REGISTRY_USERNAME }}
           DIR: ${{ needs.create-build-matrix.outputs.directory }}
           BUILD_ARGS_MATRIX: ${{ toJSON(matrix.build-args-matrix) }}
         run: |
@@ -116,10 +116,10 @@ jobs:
           echo "14"
           echo $BUILD_ARG
           echo "14.1"
-          IMAGE_NAME=${{ env.DOCKER_REGISTRY_USERNAME }}/$REPOSITORY_NAME:$TAG
+          IMAGE_NAME=$(echo "${{ env.DOCKER_REGISTRY_USERNAME }}/${REPOSITORY_NAME}:${TAG}"
           echo $IMAGE_NAME
           echo "15"
-          docker build $BUILD_ARG -t $IMAGE_NAME .
+          # docker build $BUILD_ARG -t $IMAGE_NAME .
           echo "16"
-          docker push $IMAGE_NAME
+          # docker push $IMAGE_NAME
           echo "17"
