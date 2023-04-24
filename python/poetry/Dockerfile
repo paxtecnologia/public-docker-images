@@ -7,7 +7,7 @@ ARG POETRY_URL
 ARG TAG
 
 RUN apt-get update \
-    apt-get -y upgrade \
+    && apt-get -y upgrade \
     && apt-get -y install --no-install-recommends \
     ca-certificates \
     curl \
@@ -18,7 +18,8 @@ RUN apt-get update \
     ssh-client \
     apt-transport-https \
     gnupg \ 
-    && apt-get clean && rm -rf /var/lib/apt/lists/*
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
 
 RUN curl -sSL $POETRY_URL | python3 -
 
