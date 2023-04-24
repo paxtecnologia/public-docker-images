@@ -6,7 +6,7 @@ ARG POETRY_VERSION
 ARG POETRY_URL
 ARG TAG
 
-RUN apt-get -y update \
+RUN apt-get update \
     apt-get -y upgrade \
     && apt-get -y install --no-install-recommends \
     ca-certificates \
