@@ -11,12 +11,10 @@
       "matrix": [
         {
           "DOCKER_PYTHON": "3.11-slim-buster",
-          "BANANA": "batata",
           "TAG": "3.11-1.4.2"
         },
         {
           "DOCKER_PYTHON": "3.10-slim-buster",
-          "BANANA": "maça",
           "TAG": "3.10-1.4.2"
         }
       ]

@@ -88,9 +88,9 @@ jobs:
           echo "1"
           cd ${{ env.DIR }}
           echo "2"
-          REPOSITORY_NAME=$(jq '.repository.name' config.json)
+          REPOSITORY_NAME=$(jq -r '.repository.name' config.json)
           echo "3"
-          TAG=$(echo "${BUILD_ARGS_MATRIX}" | jq '.TAG')
+          TAG=$(echo "${BUILD_ARGS_MATRIX}" | jq -r '.TAG')
           echo "4"
           BUILD_ARG=""
           echo "5"
@@ -119,7 +119,7 @@ jobs:
           IMAGE_NAME=$(echo "${{ env.DOCKER_REGISTRY_USERNAME }}/${REPOSITORY_NAME}:${TAG}")
           echo $IMAGE_NAME
           echo "15"
-          # docker build $BUILD_ARG -t $IMAGE_NAME .
+          docker build $BUILD_ARG -t $IMAGE_NAME .
           echo "16"
-          # docker push $IMAGE_NAME
+          docker push $IMAGE_NAME
           echo "17"
