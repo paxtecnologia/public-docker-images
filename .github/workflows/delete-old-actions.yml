@@ -1,0 +1,66 @@
+name: Delete Old Actions
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  create-workflows-ids:
+    runs-on: ubuntu-latest
+    outputs:
+      workflow-ids: ${{ steps.get-workflows-ids.outputs.workflow-ids }}
+    steps:
+      - name: Install jq
+        run: sudo apt-get update && sudo apt-get install -y jq
+
+      - name: Get Workflows Ids
+        id: get-workflows-ids
+        env:
+          AUTHORIZATION_TOKEN: ${{ secrets.PAXSUPORTE_GITHUB_TOKEN }}
+          REPOSITORY_NAME: ${{ github.repository }}
+        run: |
+          WORKFLOWS_IDS=$(curl -s -H "Authorization: Bearer $AUTHORIZATION_TOKEN" "https://api.github.com/repos/$REPOSITORY_NAME/actions/workflows" | jq '[.workflows[].id]' -c)
+          echo "workflow-ids=${WORKFLOWS_IDS}" >> $GITHUB_OUTPUT
+
+  create-workflow-runs-ids:
+    needs: create-workflows-ids
+    runs-on: ubuntu-latest
+    if: ${{ !contains(needs.create-workflows-ids.outputs.workflow-ids, '[]') }}
+    strategy:
+      matrix:
+        workflow-id: ${{ fromJSON(needs.create-workflows-ids.outputs.workflow-ids) }}
+      max-parallel: 4
+    outputs:
+      workflow-runs-ids: ${{ steps.get-workflows-runs-ids.outputs.workflow-runs-ids }}
+    steps:
+      - name: Install jq
+        run: sudo apt-get update && sudo apt-get install -y jq
+
+      - name: Get Workflows Runs Ids
+        id: get-workflows-runs-ids
+        env:
+          AUTHORIZATION_TOKEN: ${{ secrets.PAXSUPORTE_GITHUB_TOKEN }}
+          REPOSITORY_NAME: ${{ github.repository }}
+          WORKFLOW_ID: ${{ matrix.workflow-id }}
+        run: |
+          WORKFLOW_RUNS=$(curl -s -H "Authorization: Bearer $AUTHORIZATION_TOKEN" "https://api.github.com/repos/$REPOSITORY_NAME/actions/workflows/$WORKFLOW_ID/runs?per_page=100" | jq '.workflow_runs | sort_by(.created_at) | reverse | .[10:] | [.[].id]' -c)
+          echo "workflow-runs-ids=${WORKFLOW_RUNS}" >> $GITHUB_OUTPUT
+
+  delete-workflow-runs:
+    needs: create-workflow-runs-ids
+    runs-on: ubuntu-latest
+    if: ${{ !contains(needs.create-workflow-runs-ids.outputs.workflow-runs-ids, '[]') }}
+    strategy:
+      matrix:
+        workflow-runs-id: ${{ fromJSON(needs.create-workflow-runs-ids.outputs.workflow-runs-ids) }}
+      max-parallel: 4
+    steps:
+      - name: Delete workflow runs id
+        id: delete-workflow-runs-id
+        env:
+          AUTHORIZATION_TOKEN: ${{ secrets.PAXSUPORTE_GITHUB_TOKEN }}
+          REPOSITORY_NAME: ${{ github.repository }}
+          WORKFLOW_RUNS_ID: ${{ matrix.workflow-runs-id }}
+        run: |
+          curl -X DELETE -s -H "Authorization: token $AUTHORIZATION_TOKEN" "https://api.github.com/repos/${REPOSITORY_NAME}/actions/runs/$WORKFLOW_RUNS_ID"
