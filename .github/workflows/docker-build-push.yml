@@ -83,13 +83,14 @@ jobs:
         env:
           DOCKERHUB_USERNAME: ${{ secrets.DOCKER_REGISTRY_USERNAME }}
           DIR: ${{ needs.create-build-matrix.outputs.directory }}
+          BUILD_ARGS_MATRIX: ${{ toJSON(matrix.build-args-matrix) }}
         run: |
           echo "1"
           cd ${{ env.DIR }}
           echo "2"
           REPOSITORY_NAME=$(jq '.repository.name' config.json)
           echo "3"
-          TAG=$(echo $BUILD_ARGS_MATRIX | jq '.TAG')
+          TAG=$(echo "${BUILD_ARGS_MATRIX}" | jq '.TAG')
           echo "4"
           BUILD_ARG=""
           echo "5"
@@ -105,9 +106,9 @@ jobs:
           echo "10"
           echo $BUILD_ARG
           echo "10.1"
-          for key in $(echo "${{ matrix.build-args-matrix }}" | jq -r keys[]); do
+          for key in $(echo "${BUILD_ARGS_MATRIX}" | jq -r keys[]); do
             echo "11"
-            value=$(echo "${{ matrix.build-args-matrix }}" | jq -r ".${key}")
+            value=$(echo "${BUILD_ARGS_MATRIX}" | jq -r ".${key}")
             echo "2"
             BUILD_ARG="${BUILD_ARG} --build-arg ${key}=${value}"
             echo "13"
