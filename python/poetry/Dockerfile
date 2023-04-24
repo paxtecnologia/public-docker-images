@@ -8,7 +8,8 @@ ARG TAG
 
 RUN apt-get update \
     && apt-get -y upgrade \
-    && apt-get -y install --no-install-recommends \
+    && apt-get -y install \
+    --no-install-recommends --no-install-suggests \
     ca-certificates \
     curl \
     unzip \
