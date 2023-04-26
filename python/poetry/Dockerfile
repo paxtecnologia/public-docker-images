@@ -5,6 +5,7 @@ FROM python:$DOCKER_PYTHON
 ARG POETRY_VERSION
 ARG POETRY_URL
 ARG TAG
+ARG POETRY_HOME
 
 RUN apt-get update \
     && apt-get -y upgrade \

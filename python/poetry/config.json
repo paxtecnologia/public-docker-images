@@ -6,7 +6,8 @@
     "args": {
       "global": {
         "POETRY_URL": "https://install.python-poetry.org",
-        "POETRY_VERSION": "1.4.2"
+        "POETRY_VERSION": "1.4.2",
+        "POETRY_HOME": "/usr/local/bin"
       },
       "matrix": [
         {
