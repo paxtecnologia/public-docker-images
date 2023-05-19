@@ -1,0 +1,20 @@
+{
+  "repository": {
+    "name": "elasticsearch-index-clear"
+  },
+  "build": {
+    "args": {
+      "matrix": [
+        {
+          "CENTOS": "centos8.4.2105",
+          "TAG": "v1.0.2"
+        },
+        {
+          "CENTOS": "centos8.4.2105",
+          "TAG": "latest"
+        }
+      ]
+    }
+  },
+  "update": "2023-05-19T13:08:00Z"
+}
