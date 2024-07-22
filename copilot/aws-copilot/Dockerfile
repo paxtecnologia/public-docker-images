@@ -1,0 +1,14 @@
+FROM ubuntu:20.04
+
+RUN apt-get update && \
+    apt-get install -y \
+    curl \
+    unzip \
+    tar \
+    gzip && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
+
+RUN curl -Lo copilot https://github.com/aws/copilot-cli/releases/latest/download/copilot-linux \
+    && chmod +x copilot \
+    && mv copilot /usr/local/bin/copilot
