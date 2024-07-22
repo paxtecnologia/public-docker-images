@@ -1,0 +1,16 @@
+{
+  "repository": {
+    "name": "aws-copilot"
+  },
+  "build": {
+    "args": {
+      "matrix": [
+        {
+          "COPILOT": "copilot-1.32.0",
+          "TAG": "v1.0"
+        }
+      ]
+    }
+  },
+  "update": "2024-07-22T16:50:00Z"
+}
