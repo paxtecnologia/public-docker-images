@@ -23,3 +23,9 @@ RUN apt-get update && \
 RUN curl -Lo copilot https://github.com/aws/copilot-cli/releases/latest/download/copilot-linux \
     && chmod +x copilot \
     && mv copilot /usr/local/bin/copilot
+
+COPY startDaemonDocker.sh /usr/local/bin/
+
+RUN chmod +x /usr/local/bin/startDaemonDocker.sh
+
+ENTRYPOINT ["startDaemonDocker.sh"]
