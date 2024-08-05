@@ -7,7 +7,7 @@ RUN apt-get update && \
     curl \
     unzip \
     tar \
-    gzip && \
+    gzip \
     apt-transport-https \
     ca-certificates \
     gnupg-agent \
