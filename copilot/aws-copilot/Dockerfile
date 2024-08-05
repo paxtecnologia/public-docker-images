@@ -19,13 +19,10 @@ RUN apt-get update && \
     apt-get install -y docker-ce docker-ce-cli containerd.io && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
+    
+RUN dockerd
 
 RUN curl -Lo copilot https://github.com/aws/copilot-cli/releases/latest/download/copilot-linux \
     && chmod +x copilot \
     && mv copilot /usr/local/bin/copilot
 
-COPY startDaemonDocker.sh /usr/local/bin/
-
-RUN chmod +x /usr/local/bin/startDaemonDocker.sh
-
-ENTRYPOINT ["startDaemonDocker.sh"]
