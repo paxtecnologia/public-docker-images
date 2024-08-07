@@ -8,18 +8,20 @@ RUN apt-get update && \
     unzip \
     tar \
     gzip \
-    wget \
-    gnupg2 \
+    apt-transport-https \
+    ca-certificates \
+    gnupg-agent \
+    gnupg \
     lsb-release \
-    software-properties-common  && \
+    software-properties-common && \
+    curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add - && \
+    add-apt-repository \
+    "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" && \
+    apt-get update && \
+    apt-get install -y docker-ce docker-ce-cli containerd.io && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
     
-RUN sh -c "echo 'deb https://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/stable/xUbuntu_$(lsb_release -rs)/ /' > /etc/apt/sources.list.d/devel:kubic:libcontainers:stable.list" \
-    && wget -nv https://download.opensuse.org/repositories/devel:kubic:libcontainers:stable/xUbuntu_$(lsb_release -rs)/Release.key -O- | apt-key add -
-
-RUN apt-get update && apt-get install -y podman
-
 RUN curl -Lo copilot https://github.com/aws/copilot-cli/releases/latest/download/copilot-linux \
     && chmod +x copilot \
     && mv copilot /usr/local/bin/copilot
