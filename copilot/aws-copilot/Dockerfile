@@ -20,6 +20,11 @@ RUN sh -c "echo 'deb https://download.opensuse.org/repositories/devel:/kubic:/li
 
 RUN apt-get update && apt-get install -y podman
 
+RUN apk add --no-cache podman fuse-overlayfs
+
+RUN mkdir -p /etc/containers && \
+    echo '[storage]\ndriver = "overlay"\nmount_program = "/usr/bin/fuse-overlayfs"' > /etc/containers/storage.conf
+
 RUN curl -Lo copilot https://github.com/aws/copilot-cli/releases/latest/download/copilot-linux \
     && chmod +x copilot \
     && mv copilot /usr/local/bin/copilot
