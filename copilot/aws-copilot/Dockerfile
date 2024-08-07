@@ -18,12 +18,9 @@ RUN apt-get update && \
 RUN sh -c "echo 'deb https://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/stable/xUbuntu_$(lsb_release -rs)/ /' > /etc/apt/sources.list.d/devel:kubic:libcontainers:stable.list" \
     && wget -nv https://download.opensuse.org/repositories/devel:kubic:libcontainers:stable/xUbuntu_$(lsb_release -rs)/Release.key -O- | apt-key add -
 
+RUN apt-get install linux-image-generic linux-headers-generic
+
 RUN apt-get update && apt-get install -y podman
-
-RUN apk add --no-cache podman fuse-overlayfs
-
-RUN mkdir -p /etc/containers && \
-    echo '[storage]\ndriver = "overlay"\nmount_program = "/usr/bin/fuse-overlayfs"' > /etc/containers/storage.conf
 
 RUN curl -Lo copilot https://github.com/aws/copilot-cli/releases/latest/download/copilot-linux \
     && chmod +x copilot \
