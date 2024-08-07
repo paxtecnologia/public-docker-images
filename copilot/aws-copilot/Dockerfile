@@ -11,7 +11,7 @@ RUN apt-get update && \
     wget \
     gnupg2 \
     lsb-release \
-    software-properties-common
+    software-properties-common  && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
     
